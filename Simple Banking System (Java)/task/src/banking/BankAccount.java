@@ -76,6 +76,29 @@ public class BankAccount {
         return balance;
     }
 
+    /**
+     * Updates the in-memory balance, e.g. after an income or transfer has been persisted
+     * to the database. Package-private: only {@link BankSystem} needs this.
+     *
+     * @param balance the new balance
+     */
+    void setBalance(int balance) {
+        this.balance = balance;
+    }
+
+    /**
+     * Checks whether {@code cardNumber} passes the Luhn ("modulus 10") check: its last digit
+     * must equal the check digit computed from the digits preceding it.
+     *
+     * @param cardNumber the full card number to validate, e.g. a 16-digit number
+     * @return {@code true} if the number is Luhn-valid
+     */
+    public static boolean isLuhnValid(String cardNumber) {
+        String prefix = cardNumber.substring(0, cardNumber.length() - 1);
+        int checkDigit = cardNumber.charAt(cardNumber.length() - 1) - '0';
+        return computeLuhnCheckDigit(prefix) == checkDigit;
+    }
+
     @Override
     public String toString() {
         return "BankAccount{" +

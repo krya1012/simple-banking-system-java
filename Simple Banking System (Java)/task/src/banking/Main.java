@@ -48,26 +48,43 @@ public class Main {
      *         user chose to exit
      */
     private boolean performAction(int action) {
-        switch (action) {
-            case 1:
-                if (!isLogged) {
+        if (!isLogged) {
+            switch (action) {
+                case 1:
                     bankSystem.createAccount();
-                } else {
-                    bankSystem.printBalance();
-                }
-                break;
-            case 2:
-                if (!isLogged) {
+                    break;
+                case 2:
                     isLogged = bankSystem.logIntoAccount();
-                } else {
+                    break;
+                case 0:
+                    bankSystem.exit();
+                    return false;
+                default:
+                    System.out.println("Wrong option");
+            }
+        } else {
+            switch (action) {
+                case 1:
+                    bankSystem.printBalance();
+                    break;
+                case 2:
+                    bankSystem.addIncome();
+                    break;
+                case 3:
+                    bankSystem.doTransfer();
+                    break;
+                case 4:
+                    isLogged = bankSystem.closeAccount();
+                    break;
+                case 5:
                     isLogged = bankSystem.logOut();
-                }
-                break;
-            case 0:
-                bankSystem.exit();
-                return false;
-            default:
-                System.out.println("Wrong option");
+                    break;
+                case 0:
+                    bankSystem.exit();
+                    return false;
+                default:
+                    System.out.println("Wrong option");
+            }
         }
         return true;
     }

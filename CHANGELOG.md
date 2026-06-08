@@ -1,5 +1,37 @@
 # Changelog
 
+## Stage 4 — Advanced system
+
+### Added
+
+- The logged-in menu now offers `Add income`, `Do transfer`, and `Close account` alongside the
+  existing `Balance`/`Log out`/`Exit`:
+  - **Add income** reads an amount and credits it to the current account's balance, persisting
+    the new balance via `Database.updateBalance`.
+  - **Do transfer** reads a receiver card number and an amount, then validates — in order — that
+    the receiver isn't the sender (`You can't transfer money to the same account!`), is
+    Luhn-valid (`Probably you made a mistake in the card number. Please try again!`), exists
+    (`Such a card does not exist.`), and that the sender has sufficient funds
+    (`Not enough money!`); on success it debits the sender and credits the receiver (both
+    persisted) and prints `Success!`.
+  - **Close account** deletes the current account's row via `Database.deleteAccount`, prints
+    `The account has been closed!`, and returns the user to the logged-out menu.
+- `Database.updateBalance(...)` and `Database.deleteAccount(...)`, following the existing
+  try-with-resources connection pattern.
+- `BankAccount.isLuhnValid(...)`, a public Luhn validator that reuses the existing check-digit
+  computation to verify an arbitrary entered card number, and a package-private
+  `BankAccount.setBalance(...)` so `BankSystem` can keep the in-memory account in sync with the
+  database after income/transfers.
+
+### Changed
+
+- `Main.performAction` now branches on `isLogged` before dispatching on the numeric choice,
+  since the logged-in menu's option numbers (`1`-`5`, `0`) no longer line up positionally with
+  the logged-out menu's (`1`, `2`, `0`).
+- The bundled `SimpleBankSystemTest` was replaced by Hyperskill's official stage-4 suite, which
+  exercises income, every transfer validation path (in the documented order), successful
+  transfers, account closure, and that a closed account can no longer log in.
+
 ## Stage 3 — I'm so lite
 
 ### Added

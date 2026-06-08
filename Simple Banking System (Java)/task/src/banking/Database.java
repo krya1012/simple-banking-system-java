@@ -73,6 +73,42 @@ public class Database {
     }
 
     /**
+     * Updates the stored balance of the account with the given card number.
+     *
+     * @param cardNumber the card number identifying the account
+     * @param balance the new balance to store
+     */
+    public void updateBalance(String cardNumber, int balance) {
+        String sql = "UPDATE card SET balance = ? WHERE number = ?";
+
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, balance);
+            statement.setString(2, cardNumber);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update the account balance", e);
+        }
+    }
+
+    /**
+     * Removes the account with the given card number from the {@code card} table.
+     *
+     * @param cardNumber the card number identifying the account to delete
+     */
+    public void deleteAccount(String cardNumber) {
+        String sql = "DELETE FROM card WHERE number = ?";
+
+        try (Connection connection = DriverManager.getConnection(connectionUrl);
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, cardNumber);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete the account", e);
+        }
+    }
+
+    /**
      * Looks up a stored account by its card number.
      *
      * @param cardNumber the card number to look up
