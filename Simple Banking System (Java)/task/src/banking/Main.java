@@ -2,6 +2,13 @@ package banking;
 
 import java.util.Scanner;
 
+/**
+ * Entry point for the console banking system.
+ *
+ * <p>Runs the menu loop: shows the appropriate menu depending on whether a user is
+ * logged in, reads the chosen option, and dispatches it to {@link BankSystem}. The
+ * loop keeps running until the user selects "Exit".
+ */
 public class Main {
 
     private static boolean isLogged = false;
@@ -22,6 +29,14 @@ public class Main {
         }
     }
 
+    /**
+     * Dispatches a single menu choice to the matching {@link BankSystem} action.
+     * The available actions depend on whether a user is currently logged in.
+     *
+     * @param action the numeric menu option chosen by the user
+     * @return {@code true} if the program should keep running, {@code false} if the
+     *         user chose to exit
+     */
     private static boolean performAction(int action) {
         switch (action) {
             case 1:
