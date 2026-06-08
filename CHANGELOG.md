@@ -1,5 +1,14 @@
 # Changelog
 
+## Stage 2 — Luhn algorithm
+
+### Changed
+
+- Card numbers are now generated to pass the Luhn ("modulus 10") checksum, as required by this
+  stage, instead of using an arbitrary last digit. `BankAccount` now builds each 16-digit card
+  number from the `400000` BIN, a random 9-digit account identifier, and a check digit computed
+  by the new `computeLuhnCheckDigit` helper so the full number validates under the Luhn algorithm.
+
 ## Stage 1 — Card anatomy
 
 Initial implementation of the console banking system covering account creation, login/logout,

@@ -68,19 +68,48 @@ public class BankAccount {
     }
 
     /**
-     * @return a random 10-digit account identifier, unique enough to keep the
+     * @return a random 9-digit account identifier, unique enough to keep the
      *         resulting card number distinct in practice
      */
     private static long generateAccountIdentifier() {
-        return ThreadLocalRandom.current().nextLong(1000000000L, 9999999999L);
+        return ThreadLocalRandom.current().nextLong(100_000_000L, 1_000_000_000L);
     }
 
     /**
-     * @return a 16-digit card number: the {@code 400000} bank identification number (BIN)
-     *         followed by a 10-digit account identifier
+     * @return a 16-digit card number that passes the Luhn check: the {@code 400000} bank
+     *         identification number (BIN), a 9-digit account identifier, and a check digit
+     *         computed by {@link #computeLuhnCheckDigit(String)} so the whole number validates
      */
     private static String generateCardNumber() {
-        return "400000" + generateAccountIdentifier();
+        String prefix = "400000" + generateAccountIdentifier();
+        return prefix + computeLuhnCheckDigit(prefix);
+    }
+
+    /**
+     * Computes the check digit that, appended to {@code prefix}, makes the resulting number
+     * pass the Luhn ("modulus 10") check.
+     *
+     * <p>Walking {@code prefix} from its rightmost digit, every digit at an odd position
+     * (1st, 3rd, 5th, ... from the right — i.e. the digits that end up at even positions once
+     * the check digit is appended) is doubled, subtracting 9 if the doubled value exceeds 9.
+     * The check digit is whatever brings the total sum of all digits to a multiple of 10.
+     *
+     * @param prefix the digits preceding the check digit, e.g. a 15-digit BIN+account number
+     * @return the single check digit (0-9) to append to {@code prefix}
+     */
+    private static int computeLuhnCheckDigit(String prefix) {
+        int sum = 0;
+        for (int i = 0; i < prefix.length(); i++) {
+            int digit = prefix.charAt(prefix.length() - 1 - i) - '0';
+            if (i % 2 == 0) {
+                digit *= 2;
+                if (digit > 9) {
+                    digit -= 9;
+                }
+            }
+            sum += digit;
+        }
+        return (10 - (sum % 10)) % 10;
     }
 
     /**
