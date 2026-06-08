@@ -31,6 +31,23 @@ public class BankAccount {
     }
 
     /**
+     * Reconstructs an account from data already stored elsewhere (e.g. a database row),
+     * skipping card number/PIN generation. Package-private: only {@link Database} needs this.
+     *
+     * @param cardNumber the stored card number
+     * @param pin the stored PIN
+     * @param balance the stored balance
+     * @return an account wrapping the given data
+     */
+    static BankAccount fromRecord(String cardNumber, int pin, int balance) {
+        BankAccount bankAccount = new BankAccount();
+        bankAccount.cardNumber = cardNumber;
+        bankAccount.pin = pin;
+        bankAccount.balance = balance;
+        return bankAccount;
+    }
+
+    /**
      * @return the 16-digit card number, e.g. {@code 4000001234567890}
      */
     public String getCardNumber() {

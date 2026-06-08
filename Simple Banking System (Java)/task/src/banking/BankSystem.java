@@ -1,12 +1,11 @@
 package banking;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 
 /**
- * Drives the console banking system: stores all created accounts, tracks the
+ * Drives the console banking system: persists accounts to a {@link Database}, tracks the
  * currently logged-in account, prints menus, and implements every menu action
  * (create account, log in/out, check balance, exit).
  *
@@ -16,15 +15,17 @@ import java.util.Scanner;
  */
 public class BankSystem {
 
-    private final Map<String, BankAccount> accounts = new HashMap<>();
     private final Scanner scanner;
+    private final Database database;
     private BankAccount currentAccount;
 
     /**
      * @param scanner shared scanner used to read all user input (typically wrapping {@code System.in})
+     * @param database backing store for created accounts
      */
-    public BankSystem(Scanner scanner) {
+    public BankSystem(Scanner scanner, Database database) {
         this.scanner = scanner;
+        this.database = database;
     }
 
     /**
@@ -54,9 +55,9 @@ public class BankSystem {
         BankAccount bankAccount;
         do {
             bankAccount = BankAccount.createNewBankAccount();
-        } while (accounts.containsKey(bankAccount.getCardNumber()));
+        } while (database.cardNumberExists(bankAccount.getCardNumber()));
 
-        accounts.put(bankAccount.getCardNumber(), bankAccount);
+        database.insertAccount(bankAccount);
         System.out.println("Your card has been created");
         System.out.println("You card number:");
         System.out.println(bankAccount.getCardNumber());
@@ -77,14 +78,14 @@ public class BankSystem {
         System.out.println("Enter your PIN:");
         int pinCode = Integer.parseInt(scanner.nextLine());
 
-        BankAccount bankAccount = accounts.get(cardNumber);
-        if (bankAccount == null || bankAccount.getPin() != pinCode) {
+        Optional<BankAccount> bankAccount = database.findByCardNumber(cardNumber);
+        if (bankAccount.isEmpty() || bankAccount.get().getPin() != pinCode) {
             System.out.println("Wrong card number or PIN!");
             return false;
         }
 
         System.out.println("You have successfully logged in!");
-        currentAccount = bankAccount;
+        currentAccount = bankAccount.get();
         return true;
     }
 

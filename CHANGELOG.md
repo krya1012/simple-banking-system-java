@@ -1,5 +1,29 @@
 # Changelog
 
+## Stage 3 — I'm so lite
+
+### Added
+
+- New `Database` class that persists accounts in a SQLite `card` table
+  (`id INTEGER`, `number TEXT`, `pin TEXT`, `balance INTEGER DEFAULT 0`), creating the
+  database file and table on startup if they don't exist yet. Each operation opens and
+  closes its own connection via try-with-resources, so no connection is left open when
+  the program exits.
+- `BankAccount.fromRecord(...)`, a package-private factory for reconstructing an account
+  from a stored database row.
+
+### Changed
+
+- The database file name is now read from a required `-fileName <name>` command-line
+  argument (e.g. `-fileName card.s3db`); `Main` is now instance-based so this value can
+  flow from `args` into the `Database`/`BankSystem` constructors.
+- `BankSystem` no longer stores accounts in an in-memory map — `createAccount` and
+  `logIntoAccount` now read from and write to the `Database`, so accounts survive
+  restarts.
+- The bundled `SimpleBankSystemTest` was replaced by Hyperskill's official stage-3 suite
+  (it now verifies the database file/table/schema, persisted rows, and that the program
+  fully terminates and closes its database connection on exit).
+
 ## Stage 2 — Luhn algorithm
 
 ### Changed
